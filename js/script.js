@@ -1,13 +1,16 @@
 /*Trigger after DOM is loaded*/
 document.addEventListener('DOMContentLoaded', function() {
-
     /*ID Creator*/
+    var idCage = []
+    var chars = '0123456789abcdefghiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXTZ'
     function randomString() {
-        var chars = '0123456789abcdefghiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXTZ'
         var str = ''
-        for (var i = 0; i < 10; i++) {
-            str += chars[Math.floor(Math.random() * chars.length)]
-        }
+        do {
+            for (var i = 0; i < 10; i++) {
+                str += chars[Math.floor(Math.random() * chars.length)]
+            }
+        } while (idCage.includes(str))
+        idCage.push(str)
         return str
     }
 
@@ -66,11 +69,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 self.removeCard()
             }
         })
+        this.element.querySelector('.card').addEventListener('click', function (event) {
+            event.stopPropagation()
+
+            if (event.target.classList.contains('btn-archive')) {
+                self.archiveCard()
+            }
+        })
+        this.element.querySelector('.card').addEventListener('click', function (event) {
+            event.stopPropagation()
+
+            if (event.target.classList.contains('btn-add-comment')) {
+                self.addComment()
+            }
+        })
     }
 
     Card.prototype = {
         removeCard: function() {
             this.element.parentNode.removeChild(this.element)
+        },
+        archiveCard: function() {
+            document.getElementById(archiveColumn.id).append(this.element)
+        },
+        addComment: function() {
+            var comment = prompt('Please type in your comment')
+            var commentParagraph = document.createElement('P')
+            commentParagraph.textContent = 'Komentarz:\n' + comment
+            this.element.appendChild(commentParagraph)
         }
     }
 
@@ -102,11 +128,13 @@ document.addEventListener('DOMContentLoaded', function() {
     var todoColumn = new Column('To do');
     var doingColumn = new Column('Doing');
     var doneColumn = new Column('Done');
+    var archiveColumn = new Column('Archive')
 
 // ADDING COLUMNS TO THE BOARD
     board.addColumn(todoColumn);
     board.addColumn(doingColumn);
     board.addColumn(doneColumn);
+    board.addColumn(archiveColumn)
 
 // CREATING CARDS
     var card1 = new Card('New task');
@@ -115,6 +143,5 @@ document.addEventListener('DOMContentLoaded', function() {
 // ADDING CARDS TO COLUMNS
     todoColumn.addCard(card1);
     doingColumn.addCard(card2);
-
 })
 
